@@ -41,4 +41,10 @@ public:
 
 	PhysMotor3D* left_wheel;
 	PhysMotor3D* right_wheel;
+
+	bool city_init = false;
+
+	p2DynArray<Cube> cubes;
+
+	void CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b);
 };

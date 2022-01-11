@@ -97,7 +97,7 @@ bool ModulePlayer::Start()
 	car.wheels[3].steering = false;
 
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(0, 12, 10);
+	vehicle->SetPos(0, 22, -5);
 	
 	return true;
 }
@@ -115,26 +115,27 @@ update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
 
-	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 	{
 		acceleration = MAX_ACCELERATION;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
 	{
 		if(turn < TURN_DEGREES)
 			turn +=  TURN_DEGREES;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 	{
 		if(turn > -TURN_DEGREES)
 			turn -= TURN_DEGREES;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
 	{
-		brake = BRAKE_POWER;
+		//brake = BRAKE_POWER;
+		acceleration = -MAX_ACCELERATION * 2;
 	}
 
 	vehicle->ApplyEngineForce(acceleration);
@@ -148,7 +149,16 @@ update_status ModulePlayer::Update(float dt)
 	App->window->SetTitle(title);
 
 	vec3 pos = vec3(vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getX(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getY(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getZ());
-	App->camera->Look(vec3 (pos.x, pos.y+100, pos.z+100), pos);
+	App->camera->Look(vec3 (pos.x, pos.y + 100, pos.z - 100), pos);
+
+	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_REPEAT)
+	{
+		vehicle->SetPos(0, 22, -5);
+
+		turn = acceleration = brake = 0.0f;
+
+		vehicle->vehicle->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+	}
 
 	return UPDATE_CONTINUE;
 }

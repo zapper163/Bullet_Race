@@ -37,19 +37,35 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	Plane p(0, 1, 0, 0);
-	p.axis = true;
-	p.Render();
+	// Lava
+	CreateCube(1000, 1, 1000, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0);
 
-	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	// Map
+	CreateCube(20, 1, 20, 0, 20, -5, 0, 0, 0, 0, 1, 0, 0);
+	CreateCube(10, 1, 100, 0, 20, 55, 0, 0, 0, 0, 0.42, 0.42, 0.42);
+	CreateCube(100, 1, 10, -55, 20, 100, 0, 0, 0, 0, 0.42, 0.42, 0.42);
+	CreateCube(10, 1, 10, -110, 20, 100, 0, 0, 0, 0, 0.42, 0.42, 0.42);
+	CreateCube(10, 1, 42, -110, 27, 75, 1, 0, 0, 20, 0.42, 0.42, 0.42);
+	CreateCube(10, 1, 10, -110, 34, 50, 0, 0, 0, 0, 0.42, 0.42, 0.42);
+	CreateCube(42, 1, 10, -85, 41, 50, 0, 0, 1, 20, 0.42, 0.42, 0.42);
+
+
+
+
+	
+	if(!city_init)
 	{
-		Cube c(10, 40, 10);
-		c.SetPos(0, 10, 0);
-		c.color.r = 255;
-		c.color.g = 255;
-		c.color.b = 255;
-		float force = 30.0f;
-		App->physics->AddBody(c)->Push(0, -(App->camera->Z.y * force), 0);
+		for (size_t i = 0; i < cubes.Count(); i++)
+		{
+			App->physics->AddBody(*cubes.At(i), 0);
+		}
+		
+		city_init = true;
+	}
+
+	for (size_t i = 0; i < cubes.Count(); i++)
+	{
+		cubes.At(i)->Render();
 	}
 
 	return UPDATE_CONTINUE;
@@ -59,3 +75,18 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 }
 
+void ModuleSceneIntro::CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b)
+{
+	Cube c(long_x, long_y, long_z);
+	c.SetPos(pos_x, pos_y, pos_z);
+	c.color.r = r;
+	c.color.g = g;
+	c.color.b = b;
+
+	if (angle != 0)
+	{
+		c.SetRotation(angle, vec3(rot_x, rot_y, rot_z));
+	}
+
+	cubes.Insert(c, cubes.Count());
+}
