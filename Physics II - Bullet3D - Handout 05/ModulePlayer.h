@@ -25,4 +25,11 @@ public:
 	float turn;
 	float acceleration;
 	float brake;
+
+	double surface;
+	double a;
+	double vx;
+	double Fdx;
+	double Fdy;
+	double cd = 0.47f;
 };

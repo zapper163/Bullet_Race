@@ -42,6 +42,7 @@ bool ModulePlayer::Start()
 	float half_width = car.chassis_size.x*0.5f;
 	float half_length = car.chassis_size.z*0.5f;
 	
+	
 	vec3 direction(0,-1,0);
 	vec3 axis(-1,0,0);
 	
@@ -114,10 +115,15 @@ bool ModulePlayer::CleanUp()
 update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
+	vx = vehicle->GetKmh() * 3600 / 1000;
+	surface = (vehicle->info.chassis_size.y * 0.5) * (vehicle->info.chassis_size.x * 0.5);
+	Fdx = vx * vx * surface * cd;
+
+	a= Fdx / vehicle->info.mass;
 
 	if(App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 	{
-		acceleration = MAX_ACCELERATION;
+		acceleration = MAX_ACCELERATION-a;
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
