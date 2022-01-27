@@ -23,20 +23,6 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	return ret;
-}
-
-// Load assets
-bool ModuleSceneIntro::CleanUp()
-{
-	LOG("Unloading Intro scene");
-
-	return true;
-}
-
-// Update
-update_status ModuleSceneIntro::Update(float dt)
-{
 	// Lava
 	CreateCube(1000, 1, 1000, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0);
 
@@ -56,6 +42,22 @@ update_status ModuleSceneIntro::Update(float dt)
 	CreateCube(50, 1, 20, -87, 20, 15, 0, 0, 1, 30, 0.42, 0.42, 0.42);
 
 	CreateCube(60, 1, 20, -40, 20, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42);
+
+	return ret;
+}
+
+// Load assets
+bool ModuleSceneIntro::CleanUp()
+{
+	LOG("Unloading Intro scene");
+
+	return true;
+}
+
+// Update
+update_status ModuleSceneIntro::Update(float dt)
+{
+	
 
 
 	

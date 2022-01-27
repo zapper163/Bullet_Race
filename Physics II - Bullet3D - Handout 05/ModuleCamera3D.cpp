@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
+#include "ModulePlayer.h"
+#include "PhysVehicle3d.h"
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -46,6 +48,8 @@ update_status ModuleCamera3D::Update(float dt)
 	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 50.0f * dt;
 
+	/*
+
 	if(App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos.y += speed;
 	if(App->input->GetKey(SDL_SCANCODE_Q) == KEY_REPEAT) newPos.y -= speed;
 
@@ -58,6 +62,8 @@ update_status ModuleCamera3D::Update(float dt)
 
 	Position += newPos;
 	Reference += newPos;
+
+	*/
 
 	// Mouse motion ----------------
 
@@ -95,6 +101,17 @@ update_status ModuleCamera3D::Update(float dt)
 
 		Position = Reference + Z * length(Position);
 	}
+	//POSICION CAMARA
+	Position.x = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getX() - 15 * App->player->vehicle->vehicle->getForwardVector().getX();
+	Position.y = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() +6* App->player->vehicle->vehicle->getUpAxis();
+	Position.z = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ() - 15 * App->player->vehicle->vehicle->getForwardVector().getZ();
+	
+	//DONDE MIRA LA CAMARA
+	float pos_x = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getX() + 20 * App->player->vehicle->vehicle->getForwardVector().getX();
+	float pos_y = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 4 * App->player->vehicle->vehicle->getUpAxis();;
+	float pos_z = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ() + 20 * App->player->vehicle->vehicle->getForwardVector().getZ();
+
+	LookAt(vec3(pos_x, pos_y, pos_z));
 
 	// Recalculate matrix -------------
 	CalculateViewMatrix();

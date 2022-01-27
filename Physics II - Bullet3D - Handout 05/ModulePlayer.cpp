@@ -152,7 +152,9 @@ update_status ModulePlayer::Update(float dt)
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
 	vehicle->Brake(brake);
-
+	mat4x4 rot;
+	rot.rotate(0,(0,0,0));
+	
 	vehicle->Render();
 
 	char title[80];
@@ -160,7 +162,7 @@ update_status ModulePlayer::Update(float dt)
 	App->window->SetTitle(title);
 
 	vec3 pos = vec3(vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getX(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getY(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getZ());
-	App->camera->Look(vec3 (pos.x, pos.y + 100, pos.z - 100), pos);
+	//App->camera->Look(vec3 (pos.x, pos.y + 100, pos.z - 100), pos);
 
 	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_REPEAT)
 	{
