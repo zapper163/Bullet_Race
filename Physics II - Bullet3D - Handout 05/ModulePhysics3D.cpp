@@ -108,8 +108,6 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 		}
 	}
 
-	int a = 9;
-
 	return UPDATE_CONTINUE;
 }
 
