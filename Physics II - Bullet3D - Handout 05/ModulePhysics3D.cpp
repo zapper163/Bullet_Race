@@ -4,6 +4,8 @@
 #include "PhysBody3D.h"
 #include "PhysVehicle3D.h"
 #include "Primitive.h"
+#include "ModulePlayer.h"
+#include "ModuleSceneIntro.h"
 
 #ifdef _DEBUG
 	#pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
@@ -105,6 +107,8 @@ update_status ModulePhysics3D::PreUpdate(float dt)
 			}
 		}
 	}
+
+	int a = 9;
 
 	return UPDATE_CONTINUE;
 }
@@ -211,6 +215,8 @@ PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass)
 	btRigidBody* body = new btRigidBody(rbInfo);
 	PhysBody3D* pbody = new PhysBody3D(body);
 
+	pbody->SetId(0);
+
 	body->setUserPointer(pbody);
 	world->addRigidBody(body);
 	bodies.add(pbody);
@@ -220,7 +226,7 @@ PhysBody3D* ModulePhysics3D::AddBody(const Sphere& sphere, float mass)
 
 
 // ---------------------------------------------------------
-PhysBody3D* ModulePhysics3D::AddBody(const Cube& cube, float mass)
+PhysBody3D* ModulePhysics3D::AddBody(const Cube& cube, float mass, bool check)
 {
 	btCollisionShape* colShape = new btBoxShape(btVector3(cube.size.x*0.5f, cube.size.y*0.5f, cube.size.z*0.5f));
 	shapes.add(colShape);
@@ -239,7 +245,17 @@ PhysBody3D* ModulePhysics3D::AddBody(const Cube& cube, float mass)
 	btRigidBody* body = new btRigidBody(rbInfo);
 	PhysBody3D* pbody = new PhysBody3D(body);
 
+
+	pbody->SetId(0);
+	if (check == true) {
+		pbody->isCheckPoint = true;
+		App->scene_intro->physicCheckPoints.Insert(pbody, App->scene_intro->physicCheckPoints.Count());
+	}
+
 	body->setUserPointer(pbody);
+
+	
+
 	world->addRigidBody(body);
 	bodies.add(pbody);
 
@@ -326,6 +342,11 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 	// ---------------------
 
 	PhysVehicle3D* pvehicle = new PhysVehicle3D(body, vehicle, info);
+
+	pvehicle->SetId(0);
+
+	body->setUserPointer(pvehicle);
+
 	world->addVehicle(vehicle);
 	vehicles.add(pvehicle);
 

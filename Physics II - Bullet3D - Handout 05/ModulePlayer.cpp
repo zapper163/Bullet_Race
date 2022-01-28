@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "PhysVehicle3D.h"
 #include "PhysBody3D.h"
+#include "ModuleSceneIntro.h"
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
@@ -97,8 +98,12 @@ bool ModulePlayer::Start()
 	car.wheels[3].brake = true;
 	car.wheels[3].steering = false;
 
+
+
 	vehicle = App->physics->AddVehicle(car);
+	vehicle->isPlayer = true;
 	vehicle->SetPos(0, 22, -5);
+	vehicle->collision_listeners.add(this);
 	
 	return true;
 }
@@ -114,6 +119,29 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
+
+		if(spawnCount == App->scene_intro->checkPoints.Count())
+		{
+			hasWon = true;
+		}
+		else {
+			hasWon = false;
+		}
+
+		if (hasWon == true) {
+			for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
+			{
+
+
+				App->scene_intro->checkPoints[i].color.r = 1;
+				App->scene_intro->checkPoints[i].color.g = 0.7;
+				App->scene_intro->checkPoints[i].color.b = 0;
+
+
+			}
+		}
+
+
 	turn = acceleration = brake = 0.0f;
 	vx = vehicle->GetKmh() * 3600 / 1000;
 	surface = (vehicle->info.chassis_size.y * 0.5) * (vehicle->info.chassis_size.x * 0.5);
@@ -164,7 +192,7 @@ update_status ModulePlayer::Update(float dt)
 	vec3 pos = vec3(vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getX(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getY(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getZ());
 	//App->camera->Look(vec3 (pos.x, pos.y + 100, pos.z - 100), pos);
 
-	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
 	{
 		vehicle->SetPos(0, 22, -5);
 
@@ -176,5 +204,79 @@ update_status ModulePlayer::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
+void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
+
+	if (body1->isPlayer == true && body2->isCheckPoint == true) {
+		for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
+		{
+			if (body2 == App->scene_intro->checkPoints[i].physObject) {
+				if (App->scene_intro->checkPoints[i].color.r == 1 &&
+					App->scene_intro->checkPoints[i].color.g == 0 &&
+					App->scene_intro->checkPoints[i].color.b == 0) {
+
+					App->scene_intro->checkPoints[i].color.r = 0;
+					App->scene_intro->checkPoints[i].color.g = 1;
+					App->scene_intro->checkPoints[i].color.b = 0;
+					spawnCount++;
+				}
+				
+				spawnPos.x = App->scene_intro->checkPoints[i].transform[12];
+				spawnPos.y = App->scene_intro->checkPoints[i].transform[13];
+				spawnPos.z = App->scene_intro->checkPoints[i].transform[14];
+			}
+		}
+		
+	}
+
+	/*if (body1->isPlayer == true && body2->isWin == true) {
+		for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
+		{
+			if (body2 == App->scene_intro->checkPoints[i].physObject) {
+				if (App->scene_intro->checkPoints[i].color.r == 1 &&
+					App->scene_intro->checkPoints[i].color.g == 0 &&
+					App->scene_intro->checkPoints[i].color.b == 0) {
+
+					App->scene_intro->checkPoints[i].color.r = 1;
+					App->scene_intro->checkPoints[i].color.g = 0.7;
+					App->scene_intro->checkPoints[i].color.b = 0;
+				}
+				
+				spawnPos.x = App->scene_intro->checkPoints[i].transform[12];
+				spawnPos.y = App->scene_intro->checkPoints[i].transform[13];
+				spawnPos.z = App->scene_intro->checkPoints[i].transform[14];
+			}
+		}
+
+	}*/
+
+	if (body1->isPlayer == true && body2->isDeath == true) {
+		
+		mat4x4 rot;
+		rot.rotate(0, (0, 0, 0));
+
+		vehicle->SetPos(spawnPos.x, spawnPos.y, spawnPos.z);
+
+		turn = acceleration = brake = 0.0f;
+
+		vehicle->vehicle->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+
+		if (hasWon == false) {
+			for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
+			{
+
+
+				App->scene_intro->checkPoints[i].color.r = 1;
+				App->scene_intro->checkPoints[i].color.g = 0;
+				App->scene_intro->checkPoints[i].color.b = 0;
+
+
+			}
+
+			spawnCount = 0;
+		}
+
+	}
+
+}
 
 

@@ -42,9 +42,14 @@ public:
 	PhysMotor3D* left_wheel;
 	PhysMotor3D* right_wheel;
 
+	int checkPoint_id = 0;
+
 	bool city_init = false;
 
 	p2DynArray<Cube> cubes;
+	p2DynArray<Cube> checkPoints;
 
-	void CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b);
+	p2DynArray<PhysBody3D*> physicCheckPoints;
+
+	void CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b, bool checkPoint = false);
 };

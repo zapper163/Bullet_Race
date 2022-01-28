@@ -18,6 +18,7 @@ public:
 	bool Start();
 	update_status Update(float dt);
 	bool CleanUp();
+	void OnCollision(PhysBody3D* body1, PhysBody3D* body2) override;
 
 public:
 
@@ -32,4 +33,9 @@ public:
 	double Fdx;
 	double Fdy;
 	double cd = 0.47f;
+
+	vec3 spawnPos = (0, 0, 0);
+	int spawnCount = 0;
+
+	bool hasWon = false;
 };

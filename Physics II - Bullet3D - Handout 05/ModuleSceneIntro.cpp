@@ -23,13 +23,19 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	// Lava
-	CreateCube(1000, 1, 1000, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0);
+	// Lava // tiene que ser el primero
+	CreateCube(1000, 1, 1000, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
+	
+	// Win // tiene que ser el primer true
+	CreateCube(100, 1, 20, -60, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
 
 	// Map
-	CreateCube(20, 1, 20, 0, 20, -5, 0, 0, 0, 0, 1, 0, 0);
-	CreateCube(20, 1, 100, 0, 20, 55, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-	CreateCube(100, 1, 20, -60, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42);
+	CreateCube(20, 1, 20, 0, 20, -5, 0, 0, 0, 0, 1, 0, 0, true);
+	
+
+
+	CreateCube(20, 1, 100, 0, 20, 55, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	
 	CreateCube(20, 1, 20, -120, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42);
 	CreateCube(20, 1, 44, -120, 27.5, 64.5, 1, 0, 0, 20, 0.42, 0.42, 0.42);
 	CreateCube(20, 1, 20, -120, 35, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42);
@@ -43,6 +49,8 @@ bool ModuleSceneIntro::Start()
 
 	CreateCube(60, 1, 20, -40, 20, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42);
 
+	
+	
 	return ret;
 }
 
@@ -65,8 +73,40 @@ update_status ModuleSceneIntro::Update(float dt)
 	{
 		for (size_t i = 0; i < cubes.Count(); i++)
 		{
-			App->physics->AddBody(*cubes.At(i), 0);
+			if (i == 0) {
+				PhysBody3D* cuboCreado = App->physics->AddBody(*cubes.At(i), 0, false);
+				cuboCreado->isDeath = true;
+				cubes.At(i)->physObject = cuboCreado;
+			}
+			else {
+				PhysBody3D* cuboCreado = App->physics->AddBody(*cubes.At(i), 0, false);
+				cubes.At(i)->physObject = cuboCreado;
+			}
+			
+			
 		}
+
+		for (size_t i = 0; i < checkPoints.Count(); i++)
+		{
+			if (i == 0) {
+				PhysBody3D* checkCreado = App->physics->AddBody(*checkPoints.At(i), 0, true);
+				checkPoints.At(i)->physObject = checkCreado;
+
+				checkCreado->SetAsSensor(true);
+				//checkCreado->SetId(1);
+				checkCreado->isWin = true;
+				checkPoints.At(i)->physObject = checkCreado;
+			}
+			else {
+				PhysBody3D* checkCreado = App->physics->AddBody(*checkPoints.At(i), 0, true);
+				checkPoints.At(i)->physObject = checkCreado;
+
+				checkCreado->SetAsSensor(true);
+				//checkCreado->SetId(1);
+			}
+			
+		}
+
 		
 		city_init = true;
 	}
@@ -76,14 +116,16 @@ update_status ModuleSceneIntro::Update(float dt)
 		cubes.At(i)->Render();
 	}
 
+	for (size_t i = 0; i < checkPoints.Count(); i++)
+	{
+		checkPoints.At(i)->Render();
+	}
+
 	return UPDATE_CONTINUE;
 }
 
-void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
-{
-}
 
-void ModuleSceneIntro::CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b)
+void ModuleSceneIntro::CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b, bool check)
 {
 	Cube c(long_x, long_y, long_z);
 	c.SetPos(pos_x, pos_y, pos_z);
@@ -96,5 +138,25 @@ void ModuleSceneIntro::CreateCube(double long_x, double long_y, double long_z, d
 		c.SetRotation(angle, vec3(rot_x, rot_y, rot_z));
 	}
 
+	
+
+	if (check == true) {
+		Cube ch(3, 3, 3);
+		ch.SetPos(pos_x, pos_y +3, pos_z);
+		ch.color.r = 1;
+		ch.color.g = 0;
+		ch.color.b = 0;
+		ch.checkPointCube = true;
+		checkPoints.Insert(ch, checkPoints.Count());
+
+	}
+
+	c.checkPointCube = false;
+
 	cubes.Insert(c, cubes.Count());
+}
+
+void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
+{
+
 }
