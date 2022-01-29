@@ -20,6 +20,8 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2) override;
 
+	btVector3 quatToEuler(btQuaternion quat);
+
 public:
 
 	PhysVehicle3D* vehicle;
@@ -34,8 +36,15 @@ public:
 	double Fdy;
 	double cd = 0.47f;
 
-	vec3 spawnPos = (0, 0, 0);
+	vec3 spawnPos = (0, 22, -5);
 	int spawnCount = 0;
 
 	bool hasWon = false;
+	bool hasLose = false;
+
+	bool in_lava = false;
+
+	int lifes = 3;
+	bool life_ready = false;
+	int life_cd = 20;
 };

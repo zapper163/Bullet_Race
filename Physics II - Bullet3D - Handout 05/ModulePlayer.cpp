@@ -5,6 +5,7 @@
 #include "PhysVehicle3D.h"
 #include "PhysBody3D.h"
 #include "ModuleSceneIntro.h"
+#include <math.h>
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled), vehicle(NULL)
 {
@@ -104,7 +105,7 @@ bool ModulePlayer::Start()
 	vehicle->isPlayer = true;
 	vehicle->SetPos(0, 22, -5);
 	vehicle->collision_listeners.add(this);
-	
+
 	return true;
 }
 
@@ -169,7 +170,7 @@ update_status ModulePlayer::Update(float dt)
 	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
 	{
 		//brake = BRAKE_POWER;
-		acceleration = -MAX_ACCELERATION * 2;
+		acceleration = -MAX_ACCELERATION * 0.5;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
@@ -190,15 +191,32 @@ update_status ModulePlayer::Update(float dt)
 	App->window->SetTitle(title);
 
 	vec3 pos = vec3(vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getX(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getY(), vehicle->vehicle->getRigidBody()->getCenterOfMassTransform().getOrigin().getZ());
-	//App->camera->Look(vec3 (pos.x, pos.y + 100, pos.z - 100), pos);
-
-	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
+	
+	if (!life_ready)
 	{
-		vehicle->SetPos(0, 22, -5);
-
+		life_cd--;
+		if (life_cd <= 0)
+		{
+			life_ready = true;
+		}
+	}
+	
+	if (in_lava)
+	{
 		turn = acceleration = brake = 0.0f;
 
+		btTransform tr;
+		tr.setIdentity();
+		btQuaternion quat;
+		quat.setEulerZYX(0, 0, 0);
+		tr.setRotation(quat);
+		tr.setOrigin(btVector3(0, 22, -5));
+
+		vehicle->vehicle->getRigidBody()->setCenterOfMassTransform(tr);
+		turn = acceleration = brake = 0.0f;
 		vehicle->vehicle->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+		vehicle->vehicle->getRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
+		in_lava = false;
 	}
 
 	return UPDATE_CONTINUE;
@@ -219,10 +237,6 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 					App->scene_intro->checkPoints[i].color.b = 0;
 					spawnCount++;
 				}
-				
-				spawnPos.x = App->scene_intro->checkPoints[i].transform[12];
-				spawnPos.y = App->scene_intro->checkPoints[i].transform[13];
-				spawnPos.z = App->scene_intro->checkPoints[i].transform[14];
 			}
 		}
 		
@@ -249,34 +263,77 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 
 	}*/
 
-	if (body1->isPlayer == true && body2->isDeath == true) {
+	if (body1->isPlayer == true && body2->isDeath == true)
+	{
+		if (lifes > 0)
+		{
+			if (life_ready)
+			{
+				lifes--;
+				LOG("%d", lifes);
+				life_ready = false;
+				life_cd = 20;
+			}
+		}
+		else
+		{
+			hasLose = true;
+		}
+
+		in_lava = true;
 		
-		mat4x4 rot;
-		rot.rotate(0, (0, 0, 0));
-
-		vehicle->SetPos(spawnPos.x, spawnPos.y, spawnPos.z);
-
-		turn = acceleration = brake = 0.0f;
-
-		vehicle->vehicle->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
 
 		if (hasWon == false) {
-			for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
+			if (hasLose)
 			{
-
-
-				App->scene_intro->checkPoints[i].color.r = 1;
-				App->scene_intro->checkPoints[i].color.g = 0;
-				App->scene_intro->checkPoints[i].color.b = 0;
-
-
+				for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
+				{
+					App->scene_intro->checkPoints[i].color.r = 0;
+					App->scene_intro->checkPoints[i].color.g = 0;
+					App->scene_intro->checkPoints[i].color.b = 1;
+				}
+			}
+			else
+			{
+				for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
+				{
+					App->scene_intro->checkPoints[i].color.r = 1;
+					App->scene_intro->checkPoints[i].color.g = 0;
+					App->scene_intro->checkPoints[i].color.b = 0;
+				}
 			}
 
 			spawnCount = 0;
 		}
-
 	}
 
+}
+
+btVector3 ModulePlayer::quatToEuler(btQuaternion quat)
+{
+	float  heading, attitude, bank;
+	btQuaternion q1(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
+	double test = q1.getX() * q1.getY() + q1.getZ() * q1.getW();
+	if (test > 0.499) { // singularity at north pole
+		heading = 2 * atan2(q1.getX(), q1.getW());
+		attitude = M_PI / 2;
+		bank = 0;
+		return btVector3(0, 0, 0);
+	}
+	if (test < -0.499) { // singularity at south pole
+		heading = -2 * atan2(q1.getX(), q1.getW());
+		attitude = -M_PI / 2;
+		bank = 0;
+		return  btVector3(0, 0, 0);
+	}
+	double sqx = q1.getX() * q1.getX();
+	double sqy = q1.getY() * q1.getY();
+	double sqz = q1.getZ() * q1.getZ();
+	heading = atan2(2 * q1.getY() * q1.getW() - 2 * q1.getX() * q1.getZ(), 1 - 2 * sqy - 2 * sqz);
+	attitude = asin(2 * test);
+	bank = atan2(2 * q1.getX() * q1.getW() - 2 * q1.getY() * q1.getZ(), 1 - 2 * sqx - 2 * sqz);
+	btVector3 vec(bank, heading, attitude);
+	return vec;
 }
 
 
