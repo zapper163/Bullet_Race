@@ -20,7 +20,7 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2) override;
 
-	btVector3 quatToEuler(btQuaternion quat);
+	btVector4 quatToAxisAngle(btQuaternion quat);
 
 public:
 
@@ -37,6 +37,7 @@ public:
 	double cd = 0.47f;
 
 	vec3 spawnPos = (0, 22, -5);
+	btScalar spawnRotY = 0;
 	int spawnCount = 0;
 
 	bool hasWon = false;

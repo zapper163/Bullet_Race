@@ -49,6 +49,7 @@ public :
 public:
 	vec3 size;
 	bool checkPointCube = false;
+	float rotY = 0;
 	PhysBody3D* physObject;
 };
 

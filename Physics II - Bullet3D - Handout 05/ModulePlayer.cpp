@@ -121,12 +121,13 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
-
+	LOG("%d count, %d total", spawnCount, App->scene_intro->checkPoints.Count());
 		if(spawnCount == App->scene_intro->checkPoints.Count())
 		{
 			hasWon = true;
 		}
-		else {
+		else 
+		{
 			hasWon = false;
 		}
 
@@ -169,8 +170,8 @@ update_status ModulePlayer::Update(float dt)
 				if (lifes > i) {
 					//if (App->scene_intro->cubes[i].physObject->isLife == true) {
 					//lifeList[i]->color.a = 0.5f;
-					lifeList[i]->physObject->SetPos(vehicle->vehicle->getChassisWorldTransform().getOrigin().getX() + 1.5f - 1.5f * num, vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 3, vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ());
-					lifeList[i]->SetPos(vehicle->vehicle->getChassisWorldTransform().getOrigin().getX() + 1.5f - 1.5f * num, vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 3, vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ());
+					lifeList[i]->physObject->SetPos(vehicle->vehicle->getChassisWorldTransform().getOrigin().getX(), vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 3 + (1.5 * num), vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ());
+					lifeList[i]->SetPos(vehicle->vehicle->getChassisWorldTransform().getOrigin().getX(), vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 3 + (1.5 * num), vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ());
 					//lifeList.At(i)->Render();
 					//cubes.At(i)->Render();
 					num++;
@@ -239,6 +240,24 @@ update_status ModulePlayer::Update(float dt)
 			life_ready = true;
 		}
 	}
+
+	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN)
+	{
+		turn = acceleration = brake = 0.0f;
+
+		btTransform tr;
+		tr.setIdentity();
+		btQuaternion quat;
+		quat.setEulerZYX(0, spawnRotY, 0);
+		LOG("%f", spawnRotY);
+		tr.setRotation(quat);
+		tr.setOrigin(btVector3(spawnPos.x, spawnPos.y, spawnPos.z));
+
+		vehicle->vehicle->getRigidBody()->setCenterOfMassTransform(tr);
+		turn = acceleration = brake = 0.0f;
+		vehicle->vehicle->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+		vehicle->vehicle->getRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
+	}
 	
 	if (in_lava)
 	{
@@ -247,7 +266,8 @@ update_status ModulePlayer::Update(float dt)
 		btTransform tr;
 		tr.setIdentity();
 		btQuaternion quat;
-		quat.setEulerZYX(0, 0, 0);
+		quat.setEulerZYX(0, spawnRotY, 0);
+		LOG("%f", spawnRotY);
 		tr.setRotation(quat);
 		tr.setOrigin(btVector3(spawnPos.x, spawnPos.y, spawnPos.z));
 
@@ -293,6 +313,8 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 				spawnPos.x = App->scene_intro->checkPoints[i].transform[12];
 				spawnPos.y = App->scene_intro->checkPoints[i].transform[13];
 				spawnPos.z = App->scene_intro->checkPoints[i].transform[14];
+
+				spawnRotY = App->scene_intro->checkPoints[i].rotY;
 			}
 		}
 		
@@ -366,47 +388,9 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 
 				}
 			}
-			else
-			{
-				for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
-				{
-					//App->scene_intro->checkPoints[i].color.r = 1;
-					//App->scene_intro->checkPoints[i].color.g = 0;
-					//App->scene_intro->checkPoints[i].color.b = 0;
-				}
-			}
-
-			spawnCount = 0;
 		}
 	}
 
-}
-
-btVector3 ModulePlayer::quatToEuler(btQuaternion quat)
-{
-	float  heading, attitude, bank;
-	btQuaternion q1(quat.getX(), quat.getY(), quat.getZ(), quat.getW());
-	double test = q1.getX() * q1.getY() + q1.getZ() * q1.getW();
-	if (test > 0.499) { // singularity at north pole
-		heading = 2 * atan2(q1.getX(), q1.getW());
-		attitude = M_PI / 2;
-		bank = 0;
-		return btVector3(0, 0, 0);
-	}
-	if (test < -0.499) { // singularity at south pole
-		heading = -2 * atan2(q1.getX(), q1.getW());
-		attitude = -M_PI / 2;
-		bank = 0;
-		return  btVector3(0, 0, 0);
-	}
-	double sqx = q1.getX() * q1.getX();
-	double sqy = q1.getY() * q1.getY();
-	double sqz = q1.getZ() * q1.getZ();
-	heading = atan2(2 * q1.getY() * q1.getW() - 2 * q1.getX() * q1.getZ(), 1 - 2 * sqy - 2 * sqz);
-	attitude = asin(2 * test);
-	bank = atan2(2 * q1.getX() * q1.getW() - 2 * q1.getY() * q1.getZ(), 1 - 2 * sqx - 2 * sqz);
-	btVector3 vec(bank, heading, attitude);
-	return vec;
 }
 
 

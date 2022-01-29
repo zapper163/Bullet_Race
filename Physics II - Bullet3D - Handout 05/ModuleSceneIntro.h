@@ -51,5 +51,5 @@ public:
 
 	p2DynArray<PhysBody3D*> physicCheckPoints;
 
-	void CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b, bool checkPoint = false);
+	void CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b, bool checkPoint = false, float roty = 0.0f);
 };

@@ -74,7 +74,14 @@ bool ModulePhysics3D::Start()
 // ---------------------------------------------------------
 update_status ModulePhysics3D::PreUpdate(float dt)
 {
-	world->stepSimulation(dt, 15);
+	if (App->player->hasWon)
+	{
+		world->stepSimulation(0, 15);
+	}
+	else
+	{
+		world->stepSimulation(dt, 15);
+	}
 
 	int numManifolds = world->getDispatcher()->getNumManifolds();
 	for(int i = 0; i<numManifolds; i++)

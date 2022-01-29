@@ -27,32 +27,30 @@ bool ModuleSceneIntro::Start()
 	CreateCube(1000, 1, 1000, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
 
 	//Corazones // tres siguientes
-	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
-	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
-	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
+	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, false);
+	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, false);
+	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, false);
 	
 	// Win // 
-	CreateCube(100, 1, 20, -60, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(40, 1, 20, -30, 20, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42, true, 1.58f);
+	
 
 	// Map
-	CreateCube(20, 1, 20, 0, 20, -5, 0, 0, 0, 0, 1, 0, 0, true);
-	
+	CreateCube(20, 1, 20, 0, 20, -5, 0, 0, 0, 0, 1, 0, 0, true, 0.0f);
+	CreateCube(100, 1, 20, -60, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42, false);
+	CreateCube(20, 1, 100, 0, 20, 55, 0, 0, 0, 0, 0.42, 0.42, 0.42, false);
+	CreateCube(20, 1, 20, -120, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42, true, 3.16f);
+	CreateCube(20, 1, 44, -120, 27.5, 64.5, 1, 0, 0, 20, 0.42, 0.42, 0.42, false);
+	CreateCube(20, 1, 20, -120, 35, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42, false);
+	CreateCube(42, 1, 20, -91, 42, 34, 0, 0, 1, 20, 0.42, 0.42, 0.42, false);
+	CreateCube(100, 1, 20, -21.5, 49.15, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42, false);
+	CreateCube(20, 1, 60, 38.5, 49.15, 14, 0, 0, 0, 0, 0.42, 0.42, 0.42, true, 3.16f);
+	CreateCube(100, 1, 20, -18.25, 32.09, -6, 0, 0, 1, 20, 0.42, 0.42, 0.42, false);
+	CreateCube(20, 1, 22, -105, 15, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42, false);
+	CreateCube(50, 1, 20, -90, 15, -6, 0, 0, 0, 0, 0.42, 0.42, 0.42, true, 4.74f);
+	CreateCube(50, 1, 20, -75, 21, 15, 0, 0, 1, 15, 0.42, 0.42, 0.42, false);
 
-
-	CreateCube(20, 1, 100, 0, 20, 55, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
-	
-	CreateCube(20, 1, 20, -120, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
-	CreateCube(20, 1, 44, -120, 27.5, 64.5, 1, 0, 0, 20, 0.42, 0.42, 0.42, true);
-	CreateCube(20, 1, 20, -120, 35, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
-	CreateCube(42, 1, 20, -91, 42, 34, 0, 0, 1, 20, 0.42, 0.42, 0.42, true);
-	CreateCube(100, 1, 20, -21.5, 49.15, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
-	CreateCube(20, 1, 60, 38.5, 49.15, 14, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
-	CreateCube(100, 1, 20, -18.25, 32.09, -6, 0, 0, 1, 20, 0.42, 0.42, 0.42, true);
-	CreateCube(20, 1, 22, -105, 15, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
-	CreateCube(50, 1, 20, -90, 15, -6, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
-	CreateCube(50, 1, 20, -75, 21, 15, 0, 0, 1, 15, 0.42, 0.42, 0.42, true);
-
-	CreateCube(60, 1, 20, -40, 20, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(1, 10, 20, -10, 25, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42);
 
 	
 
@@ -132,16 +130,11 @@ update_status ModuleSceneIntro::Update(float dt)
 		checkPoints.At(i)->Render();
 	}
 
-	for (size_t i = 0; i < App->player->lifeList.Count(); i++)
-	{
-		//App->player->lifeList.At(i)->Render();
-	}
-
 	return UPDATE_CONTINUE;
 }
 
 
-void ModuleSceneIntro::CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b, bool check)
+void ModuleSceneIntro::CreateCube(double long_x, double long_y, double long_z, double pos_x, double pos_y, double pos_z, double rot_x, double rot_y, double rot_z, float angle, float r, float g, float b, bool check, float roty)
 {
 	Cube c(long_x, long_y, long_z);
 	c.SetPos(pos_x, pos_y, pos_z);
@@ -163,8 +156,8 @@ void ModuleSceneIntro::CreateCube(double long_x, double long_y, double long_z, d
 		ch.color.g = 0;
 		ch.color.b = 0;
 		ch.checkPointCube = true;
+		ch.rotY = roty;
 		checkPoints.Insert(ch, checkPoints.Count());
-
 	}
 
 	c.checkPointCube = false;

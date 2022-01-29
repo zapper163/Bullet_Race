@@ -108,7 +108,7 @@ update_status ModuleCamera3D::Update(float dt)
 	
 	//DONDE MIRA LA CAMARA
 	float pos_x = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getX() + 20 * App->player->vehicle->vehicle->getForwardVector().getX();
-	float pos_y = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 4 * App->player->vehicle->vehicle->getUpAxis();;
+	float pos_y = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getY() + 4 * App->player->vehicle->vehicle->getUpAxis();
 	float pos_z = App->player->vehicle->vehicle->getChassisWorldTransform().getOrigin().getZ() + 20 * App->player->vehicle->vehicle->getForwardVector().getZ();
 
 	LookAt(vec3(pos_x, pos_y, pos_z));
