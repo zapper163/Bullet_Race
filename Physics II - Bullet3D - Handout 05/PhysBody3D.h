@@ -34,6 +34,7 @@ public:
 	bool isPlayer = false;
 	bool isDeath = false;
 	bool isWin = false;
+	bool isLife = false;
 
 	int id;
 	bool is_sensor;

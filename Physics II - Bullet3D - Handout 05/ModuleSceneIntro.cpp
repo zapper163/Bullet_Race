@@ -25,8 +25,13 @@ bool ModuleSceneIntro::Start()
 
 	// Lava // tiene que ser el primero
 	CreateCube(1000, 1, 1000, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
+
+	//Corazones // tres siguientes
+	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
+	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
+	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0.5, 0, false);
 	
-	// Win // tiene que ser el primer true
+	// Win // 
 	CreateCube(100, 1, 20, -60, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
 
 	// Map
@@ -36,18 +41,20 @@ bool ModuleSceneIntro::Start()
 
 	CreateCube(20, 1, 100, 0, 20, 55, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
 	
-	CreateCube(20, 1, 20, -120, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-	CreateCube(20, 1, 44, -120, 27.5, 64.5, 1, 0, 0, 20, 0.42, 0.42, 0.42);
-	CreateCube(20, 1, 20, -120, 35, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-	CreateCube(42, 1, 20, -91, 42, 34, 0, 0, 1, 20, 0.42, 0.42, 0.42);
-	CreateCube(100, 1, 20, -21.5, 49.15, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-	CreateCube(20, 1, 60, 38.5, 49.15, 14, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-	CreateCube(100, 1, 20, -18.25, 32.09, -6, 0, 0, 1, 20, 0.42, 0.42, 0.42);
-	CreateCube(20, 1, 22, -105, 15, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-	CreateCube(50, 1, 20, -90, 15, -6, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-	CreateCube(50, 1, 20, -87, 20, 15, 0, 0, 1, 30, 0.42, 0.42, 0.42);
+	CreateCube(20, 1, 20, -120, 20, 95, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(20, 1, 44, -120, 27.5, 64.5, 1, 0, 0, 20, 0.42, 0.42, 0.42, true);
+	CreateCube(20, 1, 20, -120, 35, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(42, 1, 20, -91, 42, 34, 0, 0, 1, 20, 0.42, 0.42, 0.42, true);
+	CreateCube(100, 1, 20, -21.5, 49.15, 34, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(20, 1, 60, 38.5, 49.15, 14, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(100, 1, 20, -18.25, 32.09, -6, 0, 0, 1, 20, 0.42, 0.42, 0.42, true);
+	CreateCube(20, 1, 22, -105, 15, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(50, 1, 20, -90, 15, -6, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+	CreateCube(50, 1, 20, -75, 21, 15, 0, 0, 1, 15, 0.42, 0.42, 0.42, true);
 
-	CreateCube(60, 1, 20, -40, 20, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42);
+	CreateCube(60, 1, 20, -40, 20, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42, true);
+
+	
 
 	
 	
@@ -65,10 +72,6 @@ bool ModuleSceneIntro::CleanUp()
 // Update
 update_status ModuleSceneIntro::Update(float dt)
 {
-	
-
-
-	
 	if(!city_init)
 	{
 		for (size_t i = 0; i < cubes.Count(); i++)
@@ -76,6 +79,11 @@ update_status ModuleSceneIntro::Update(float dt)
 			if (i == 0) {
 				PhysBody3D* cuboCreado = App->physics->AddBody(*cubes.At(i), 0, false);
 				cuboCreado->isDeath = true;
+				cubes.At(i)->physObject = cuboCreado;
+			}
+			else if (i == 1 || i == 2 || i == 3) {
+				PhysBody3D* cuboCreado = App->physics->AddBody(*cubes.At(i), 0, false);
+				cuboCreado->isLife = true;
 				cubes.At(i)->physObject = cuboCreado;
 			}
 			else {
@@ -113,12 +121,20 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	for (size_t i = 0; i < cubes.Count(); i++)
 	{
-		cubes.At(i)->Render();
+		//if (i != 1 && i != 2 && i != 3) {
+			cubes.At(i)->Render();
+		//}
+		
 	}
 
 	for (size_t i = 0; i < checkPoints.Count(); i++)
 	{
 		checkPoints.At(i)->Render();
+	}
+
+	for (size_t i = 0; i < App->player->lifeList.Count(); i++)
+	{
+		//App->player->lifeList.At(i)->Render();
 	}
 
 	return UPDATE_CONTINUE;
