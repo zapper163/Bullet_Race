@@ -20,6 +20,8 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
+	App->audio->PlayMusic("Assets/music.ogg");
+
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
@@ -31,6 +33,10 @@ bool ModuleSceneIntro::Start()
 	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, false);
 	CreateCube(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, false);
 	
+	// Puerta //
+	CreateCube(20, 10, 1, 0, 27, 55, 0, 0, 0, 0, 0.42, 0.42, 1);
+	CreateCube(0, 10, 0, 10, 25, 55, 0, 0, 0, 0, 0.42, 0.42, 1);
+
 	// Win // 
 	CreateCube(40, 1, 20, -30, 20, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42, true, 1.58f);
 	
@@ -53,7 +59,7 @@ bool ModuleSceneIntro::Start()
 	CreateCube(1, 10, 20, -10, 25, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42);
 
 	
-
+	
 	
 	
 	return ret;
@@ -84,6 +90,11 @@ update_status ModuleSceneIntro::Update(float dt)
 				cuboCreado->isLife = true;
 				cubes.At(i)->physObject = cuboCreado;
 			}
+			else if (i == 4) {
+				PhysBody3D* cuboCreado = App->physics->AddBody(*cubes.At(i), 1, false);
+				cubes.At(i)->physObject = cuboCreado;
+
+			}
 			else {
 				PhysBody3D* cuboCreado = App->physics->AddBody(*cubes.At(i), 0, false);
 				cubes.At(i)->physObject = cuboCreado;
@@ -91,6 +102,8 @@ update_status ModuleSceneIntro::Update(float dt)
 			
 			
 		}
+
+		App->physics->AddConstraintHinge(*cubes.At(4)->physObject, *cubes.At(5)->physObject, vec3(10, 0, 0), vec3(0, 0, 0), vec3(0, 1, 0), vec3(0, 1, 0), false);
 
 		for (size_t i = 0; i < checkPoints.Count(); i++)
 		{
@@ -119,10 +132,9 @@ update_status ModuleSceneIntro::Update(float dt)
 
 	for (size_t i = 0; i < cubes.Count(); i++)
 	{
-		//if (i != 1 && i != 2 && i != 3) {
+		if (i != 4) {
 			cubes.At(i)->Render();
-		//}
-		
+		}
 	}
 
 	for (size_t i = 0; i < checkPoints.Count(); i++)

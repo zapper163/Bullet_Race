@@ -5,9 +5,9 @@
 
 struct PhysVehicle3D;
 
-#define MAX_ACCELERATION 1000.0f
+#define MAX_ACCELERATION 1500.0f
 #define TURN_DEGREES 15.0f * DEGTORAD
-#define BRAKE_POWER 10000.0f
+#define BRAKE_POWER 1500.0f
 
 class ModulePlayer : public Module
 {
@@ -34,7 +34,7 @@ public:
 	double vx;
 	double Fdx;
 	double Fdy;
-	double cd = 0.47f;
+	double cd = 0.0f;
 
 	vec3 spawnPos = (0, 22, -5);
 	btScalar spawnRotY = 0;
@@ -52,4 +52,9 @@ public:
 	p2DynArray<Cube*> lifeList;
 
 	bool hasStart = false;
+
+	unsigned int life;
+	unsigned int lose;
+	unsigned int win;
+	unsigned int check;
 };

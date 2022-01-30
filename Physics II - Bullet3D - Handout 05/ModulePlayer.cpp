@@ -30,12 +30,12 @@ bool ModulePlayer::Start()
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
 	car.maxSuspensionTravelCm = 1000.0f;
-	car.frictionSlip = 50.5;
+	car.frictionSlip = 1000; //friction value changed
 	car.maxSuspensionForce = 6000.0f;
 
 	// Wheel properties ---------------------------------------
 	float connection_height = 1.2f;
-	float wheel_radius = 0.6f;
+	float wheel_radius = 0.8f;
 	float wheel_width = 0.5f;
 	float suspensionRestLength = 1.2f;
 
@@ -106,6 +106,13 @@ bool ModulePlayer::Start()
 	vehicle->SetPos(0, 22, -5);
 	vehicle->collision_listeners.add(this);
 
+	cd = 0.47f;
+
+	life = App->audio->LoadFx("Assets/life.wav");
+	lose = App->audio->LoadFx("Assets/Lose.wav");
+	win = App->audio->LoadFx("Assets/Win.wav");
+	check = App->audio->LoadFx("Assets/check.wav");
+	
 
 	return true;
 }
@@ -134,14 +141,18 @@ update_status ModulePlayer::Update(float dt)
 		if (hasWon == true) {
 			for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
 			{
-
-
 				App->scene_intro->checkPoints[i].color.r = 1;
 				App->scene_intro->checkPoints[i].color.g = 0.7;
 				App->scene_intro->checkPoints[i].color.b = 0;
-
-
 			}
+			lifes = 3;
+			LOG("%d", lifes);
+			life_ready = false;
+			life_cd = 20;
+
+			hasWon = false;
+			App->audio->PlayFx(win);
+			spawnCount = 0;
 		}
 
 		if (hasStart == false) {
@@ -181,7 +192,15 @@ update_status ModulePlayer::Update(float dt)
 			}
 		}
 		
+		if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+		{
+			cd = 1000; //para comprobar que funciona el drag aereo, esto equivale a mucho viento en contra. 
+		}
 
+		if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		{
+			cd = 0.47f;
+		}
 
 	turn = acceleration = brake = 0.0f;
 	vx = vehicle->GetKmh() * 3600 / 1000;
@@ -217,6 +236,10 @@ update_status ModulePlayer::Update(float dt)
 	{
 		brake = BRAKE_POWER;
 	}
+
+	
+	
+	
 
 	vehicle->ApplyEngineForce(acceleration);
 	vehicle->Turn(turn);
@@ -308,6 +331,8 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 					App->scene_intro->checkPoints[i].color.g = 1;
 					App->scene_intro->checkPoints[i].color.b = 0;
 					spawnCount++;
+
+					App->audio->PlayFx(check);
 				}
 
 				spawnPos.x = App->scene_intro->checkPoints[i].transform[12];
@@ -319,6 +344,8 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 		}
 		
 	}
+
+	
 
 	/*if (body1->isPlayer == true && body2->isWin == true) {
 		for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
@@ -351,6 +378,8 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 				LOG("%d", lifes);
 				life_ready = false;
 				life_cd = 20;
+
+				App->audio->PlayFx(life);
 			}
 		}
 		else
@@ -364,6 +393,7 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 				life_cd = 20;
 
 				hasLose = true;
+				App->audio->PlayFx(lose);
 			}
 			
 		}
