@@ -57,10 +57,7 @@ bool ModuleSceneIntro::Start()
 	CreateCube(50, 1, 20, -75, 21, 15, 0, 0, 1, 15, 0.42, 0.42, 0.42, false);
 
 	CreateCube(1, 10, 40, -10, 25, 15, 0, 0, 0, 0, 0.42, 0.42, 0.42);
-
-	
-	
-	
+	CreateCube(120, 30, 1, -65, 50, 24, 0, 0, 0, 0, 0.42, 0.42, 0.42);
 	
 	return ret;
 }

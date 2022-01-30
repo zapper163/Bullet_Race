@@ -23,19 +23,19 @@ bool ModulePlayer::Start()
 	VehicleInfo car;
 
 	// Car properties ----------------------------------------
-	car.chassis_size.Set(2, 2, 4);
+	car.chassis_size.Set(2, 1.5f, 4);
 	car.chassis_offset.Set(0, 1.5, 0);
-	car.mass = 500.0f;
+	car.mass = 350.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
 	car.maxSuspensionTravelCm = 1000.0f;
 	car.frictionSlip = 1000; //friction value changed
-	car.maxSuspensionForce = 6000.0f;
+	car.maxSuspensionForce = 10000.0f;
 
 	// Wheel properties ---------------------------------------
 	float connection_height = 1.2f;
-	float wheel_radius = 0.8f;
+	float wheel_radius = 0.5f;
 	float wheel_width = 0.5f;
 	float suspensionRestLength = 1.2f;
 
@@ -128,7 +128,7 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
-	LOG("%d count, %d total", spawnCount, App->scene_intro->checkPoints.Count());
+		LOG("%d count, %d total", spawnCount, App->scene_intro->checkPoints.Count());
 		if(spawnCount >= App->scene_intro->checkPoints.Count())
 		{
 			hasWon = true;
@@ -398,6 +398,7 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 				life_cd = 20;
 
 				hasLose = true;
+				spawnCount = 0;
 				App->audio->PlayFx(lose);
 			}
 			
@@ -414,14 +415,14 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 					App->scene_intro->checkPoints[i].color.r = 1;
 					App->scene_intro->checkPoints[i].color.g = 0;
 					App->scene_intro->checkPoints[i].color.b = 0;
-
-					spawnPos.x = 0;
-					spawnPos.y = 22;
-					spawnPos.z = -5;
-
-					hasLose = false;
-
 				}
+
+				spawnPos.x = 0;
+				spawnPos.y = 22;
+				spawnPos.z = -5;
+				spawnRotY = 0;
+
+				hasLose = false;
 			}
 		}
 	}
