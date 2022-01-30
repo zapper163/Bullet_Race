@@ -129,7 +129,7 @@ bool ModulePlayer::CleanUp()
 update_status ModulePlayer::Update(float dt)
 {
 	LOG("%d count, %d total", spawnCount, App->scene_intro->checkPoints.Count());
-		if(spawnCount == App->scene_intro->checkPoints.Count())
+		if(spawnCount >= App->scene_intro->checkPoints.Count())
 		{
 			hasWon = true;
 		}
@@ -139,20 +139,35 @@ update_status ModulePlayer::Update(float dt)
 		}
 
 		if (hasWon == true) {
+			lifes = 3;
+			life_ready = false;
+			life_cd = 20;
+			
+			App->audio->PlayFx(win);
+
+			turn = acceleration = brake = 0.0f;
+
+			btTransform tr;
+			tr.setIdentity();
+			btQuaternion quat;
+			quat.setEulerZYX(0, 0, 0);
+			tr.setRotation(quat);
+			tr.setOrigin(btVector3(0, 22, -5));
+
+			vehicle->vehicle->getRigidBody()->setCenterOfMassTransform(tr);
+			turn = acceleration = brake = 0.0f;
+			vehicle->vehicle->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
+			vehicle->vehicle->getRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
+
 			for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
 			{
 				App->scene_intro->checkPoints[i].color.r = 1;
-				App->scene_intro->checkPoints[i].color.g = 0.7;
+				App->scene_intro->checkPoints[i].color.g = 0;
 				App->scene_intro->checkPoints[i].color.b = 0;
 			}
-			lifes = 3;
-			LOG("%d", lifes);
-			life_ready = false;
-			life_cd = 20;
 
+			spawnCount = -1;
 			hasWon = false;
-			App->audio->PlayFx(win);
-			spawnCount = 0;
 		}
 
 		if (hasStart == false) {
@@ -290,7 +305,6 @@ update_status ModulePlayer::Update(float dt)
 		tr.setIdentity();
 		btQuaternion quat;
 		quat.setEulerZYX(0, spawnRotY, 0);
-		LOG("%f", spawnRotY);
 		tr.setRotation(quat);
 		tr.setOrigin(btVector3(spawnPos.x, spawnPos.y, spawnPos.z));
 
@@ -298,18 +312,6 @@ update_status ModulePlayer::Update(float dt)
 		turn = acceleration = brake = 0.0f;
 		vehicle->vehicle->getRigidBody()->setLinearVelocity(btVector3(0, 0, 0));
 		vehicle->vehicle->getRigidBody()->setAngularVelocity(btVector3(0, 0, 0));
-
-		/*for (size_t i = 0; i < App->scene_intro->checkPoints.Count(); i++)
-		{
-			App->scene_intro->checkPoints[i].color.r = 1;
-			App->scene_intro->checkPoints[i].color.g = 0;
-			App->scene_intro->checkPoints[i].color.b = 0;
-
-			spawnPos.x = 0;
-			spawnPos.y = 22;
-			spawnPos.z = -5;
-
-		}*/
 
 		in_lava = false;
 	}
@@ -327,9 +329,13 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 					App->scene_intro->checkPoints[i].color.g == 0 &&
 					App->scene_intro->checkPoints[i].color.b == 0) {
 
-					App->scene_intro->checkPoints[i].color.r = 0;
-					App->scene_intro->checkPoints[i].color.g = 1;
-					App->scene_intro->checkPoints[i].color.b = 0;
+					if (i != 0)
+					{
+						App->scene_intro->checkPoints[i].color.r = 0;
+						App->scene_intro->checkPoints[i].color.g = 1;
+						App->scene_intro->checkPoints[i].color.b = 0;
+					}
+					
 					spawnCount++;
 
 					App->audio->PlayFx(check);
@@ -340,6 +346,7 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 				spawnPos.z = App->scene_intro->checkPoints[i].transform[14];
 
 				spawnRotY = App->scene_intro->checkPoints[i].rotY;
+				
 			}
 		}
 		
@@ -375,7 +382,6 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 			if (life_ready)
 			{
 				lifes--;
-				LOG("%d", lifes);
 				life_ready = false;
 				life_cd = 20;
 
@@ -388,7 +394,6 @@ void ModulePlayer::OnCollision(PhysBody3D* body1, PhysBody3D* body2) {
 			if (life_ready)
 			{
 				lifes = 3;
-				LOG("%d", lifes);
 				life_ready = false;
 				life_cd = 20;
 
